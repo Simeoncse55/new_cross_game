@@ -146,7 +146,7 @@ class _HomeState extends State<Home> {
                             currGame.boxes[ans.position[2]].filled = true;
                           }
                           if (answer.length == 4) {
-                            currGame.boxes[ans.position[3]].filled = true;
+                             currGame.boxes[ans.position[3]].filled = true;
                           }
                         }
                         setState(() {});
