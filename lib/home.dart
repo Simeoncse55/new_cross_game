@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:circular_pattern/circular_pattern.dart';
 import 'package:flutter/material.dart';
@@ -30,8 +29,8 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final pageController = PageController(
-      initialPage: 0,
-      keepPage: true
+        initialPage: 0,
+        keepPage: true
     );
 
     // late Game myHints = currGame;
@@ -56,11 +55,11 @@ class _HomeState extends State<Home> {
           return Container(
             decoration: const BoxDecoration(
                 gradient: LinearGradient(begin: Alignment.topLeft, colors: [
-              Colors.black87,
-              Colors.deepPurple,
-            ])
-                // image: DecorationImage(image: AssetImage('images/bg1.png'), fit: BoxFit.cover),
-                ),
+                  Colors.black87,
+                  Colors.deepPurple,
+                ])
+              // image: DecorationImage(image: AssetImage('images/bg1.png'), fit: BoxFit.cover),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(25.0),
               child: Column(
@@ -132,14 +131,13 @@ class _HomeState extends State<Home> {
                       }),
                   Container(
                     alignment: Alignment.center,
-                    height: 300,
-                    width: 300,
+                    height: 280,
                     decoration: const BoxDecoration(
-                      color: Colors.white24,
+                      color: Colors.white12,
                       shape: BoxShape.circle,
                     ),
                     child: CircularPattern(
-                      pointRadius: 3,
+                      pointRadius: 42,
                       onStart: () {},
                       minInputLength: 2,
                       onComplete: (List<PatternDot> input) async {
@@ -152,7 +150,7 @@ class _HomeState extends State<Home> {
                         });
                         final ans = currGame.answers
                             .where((e) =>
-                                e.value?.toLowerCase() == answer.toLowerCase())
+                        e.value?.toLowerCase() == answer.toLowerCase())
                             .firstOrNull;
                         if (ans != null) {
                           _answerCount++;
@@ -175,31 +173,33 @@ class _HomeState extends State<Home> {
                           setState(() {});
                           if (_answerCount == currGame.answers.length) {
                             debugPrint('$_answerCount');
-                            Get.defaultDialog(
-                                title: "Welcome to Flutter Agency",
-                                middleText:
-                                    "We are the best Flutter App Development Company!",
-                                confirm: ElevatedButton(
-                                    onPressed: () {
-                                      debugPrint('tapped');
-                                      pageController.jumpToPage(1);
-                                    },
-                                    child: Text('next')));
-                            debugPrint('${index + 1}');
-                            setState(() {});
-                          }
-                        }
+                            AwesomeDialog(
+                                context: context,
+                                dialogType: DialogType.info,
+                                animType: AnimType.rightSlide,
+                                title: 'Dialog Title',
+                                desc: 'Dialog description here.............',
+                                btnOkOnPress: (){
+                                  pageController.jumpToPage(index +1);
+                            },
+                        ).show();
+                        setState(() {});
+                      }
+                      }
                       },
                       dots: currGame.hints
                           .map((e) => PatternDot(value: e))
                           .toList(),
                       options: const CircularPatternOptions(
                         primaryTextStyle: TextStyle(
-                          fontSize: 8,
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
                           color: Colors.black,
                         ),
                         primaryDotColor: Colors.transparent,
                         selectedTextStyle: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                         selectedDotColor: Colors.deepOrange,

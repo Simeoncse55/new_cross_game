@@ -29,6 +29,11 @@ class Game {
 class Data {
   static List<Game> game = [
     Game(
+        gridCount: 3,
+        boxes: threeBox,
+        answers: threeBox_s,
+        hints: ['P','R','O']),
+    Game(
         gridCount: 8,
         boxes: boxes,
         answers: answers,
@@ -64,6 +69,23 @@ class Data {
         answers: answer_7,
         hints: ['B', 'O', 'W', 'L'])
   ];
+
+  static List<Box> threeBox = [
+    Box(value: 'P', position: 0),
+    Box(value: 'R', position: 1),
+    Box(value: 'O', position: 2),
+    Box(value: 'O', position: 3),
+    Box(value: null, position: 4),
+    Box(value: null, position: 5),
+    Box(value: 'R', position: 6),
+    Box(value: null, position: 7),
+    Box(value: null, position: 8),
+  ];
+  static List<Answers> threeBox_s = [
+    Answers(value: 'PRO', position: [0, 1, 2]),
+    Answers(value: 'POR', position: [0, 3, 6]),
+  ];
+
   static List<Box> boxes = [
     Box(value: 'G', position: 0),
     Box(value: 'A', position: 1),
