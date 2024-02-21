@@ -1,10 +1,11 @@
 import 'dart:math';
 
+import 'package:circular_pattern/circular_pattern.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'model.dart';
-import 'package:circular_pattern/circular_pattern.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -15,10 +16,23 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   late Game currGame;
+  int _answerCount = 0;
+
+  List<Game> _games = List.empty(growable: true);
+
+  @override
+  void initState() {
+    super.initState();
+    _games.clear();
+    _games = Data.game;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final controller = PageController();
+    final pageController = PageController(
+      initialPage: 0,
+      keepPage: true
+    );
 
     // late Game myHints = currGame;
     return Scaffold(
@@ -31,15 +45,13 @@ class _HomeState extends State<Home> {
       ),
       body: PageView.builder(
         physics: const NeverScrollableScrollPhysics(),
-        controller: controller,
+        controller: pageController,
         //physics: NeverScrollableScrollPhysics(),
-        itemCount: 7,
+        itemCount: _games.length,
         itemBuilder: (context, index) {
           print(index);
-          var _level = index + 1;
-          var _hintBadge = 3;
 
-          currGame = game[index];
+          currGame = _games[index];
 
           return Container(
             decoration: const BoxDecoration(
@@ -59,7 +71,9 @@ class _HomeState extends State<Home> {
                     children: [
                       IconButton(
                           onPressed: () {
-                            controller.jumpToPage(index - 1);
+                            pageController.jumpToPage(index - 1);
+                            _answerCount = 0;
+                            setState(() {});
                           },
                           icon: Icon(
                             Icons.arrow_back,
@@ -68,7 +82,9 @@ class _HomeState extends State<Home> {
                           )),
                       IconButton(
                           onPressed: () {
-                            controller.jumpToPage(index + 1);
+                            pageController.jumpToPage(index + 1);
+                            _answerCount = 0;
+                            setState(() {});
                           },
                           icon: Icon(
                             Icons.arrow_forward,
@@ -86,9 +102,9 @@ class _HomeState extends State<Home> {
                         mainAxisSpacing: 0,
                         crossAxisSpacing: 4,
                       ),
-                      itemCount: game[index].boxes.length,
+                      itemCount: currGame.boxes.length,
                       itemBuilder: (context, boxIndex) {
-                        final currBox = game[index].boxes[boxIndex];
+                        final currBox = currGame.boxes[boxIndex];
 
                         return Stack(
                           children: [
@@ -123,49 +139,70 @@ class _HomeState extends State<Home> {
                       shape: BoxShape.circle,
                     ),
                     child: CircularPattern(
-
                       pointRadius: 3,
                       onStart: () {},
-                      onComplete: (List<PatternDot> input) {
+                      minInputLength: 2,
+                      onComplete: (List<PatternDot> input) async {
                         final hints = currGame.hints;
                         debugPrint(hints.toString());
                         debugPrint(input.toString());
-
                         String answer = '';
-                        // input.forEach((element) {
-                        //   answer += hints[element];
-                        // });
+                        input.forEach((element) {
+                          answer += element.value;
+                        });
                         final ans = currGame.answers
                             .where((e) =>
                                 e.value?.toLowerCase() == answer.toLowerCase())
                             .firstOrNull;
                         if (ans != null) {
-                          currGame.boxes[ans.position[0]].filled = true;
-                          currGame.boxes[ans.position[1]].filled = true;
-                          if (answer.length == 3 || answer.length == 4) {
+                          _answerCount++;
+                          if (answer.length >= 2) {
+                            currGame.boxes[ans.position[0]].filled = true;
+                            currGame.boxes[ans.position[1]].filled = true;
+                          }
+                          if (answer.length >= 3) {
                             currGame.boxes[ans.position[2]].filled = true;
                           }
-                          if (answer.length == 4) {
-                             currGame.boxes[ans.position[3]].filled = true;
+                          if (answer.length >= 4) {
+                            currGame.boxes[ans.position[3]].filled = true;
+                          }
+                          if (answer.length >= 5) {
+                            currGame.boxes[ans.position[4]].filled = true;
+                          }
+                          if (answer.length >= 6) {
+                            currGame.boxes[ans.position[5]].filled = true;
+                          }
+                          setState(() {});
+                          if (_answerCount == currGame.answers.length) {
+                            debugPrint('$_answerCount');
+                            Get.defaultDialog(
+                                title: "Welcome to Flutter Agency",
+                                middleText:
+                                    "We are the best Flutter App Development Company!",
+                                confirm: ElevatedButton(
+                                    onPressed: () {
+                                      debugPrint('tapped');
+                                      pageController.jumpToPage(1);
+                                    },
+                                    child: Text('next')));
+                            debugPrint('${index + 1}');
+                            setState(() {});
                           }
                         }
-                        setState(() {});
                       },
                       dots: currGame.hints
                           .map((e) => PatternDot(value: e))
                           .toList(),
-
-                      ///Optionally edit color and font themes with CircularPatternOptions()
-                      options:  const CircularPatternOptions(
-
+                      options: const CircularPatternOptions(
                         primaryTextStyle: TextStyle(
-                        fontSize: 8,
+                          fontSize: 8,
                           color: Colors.black,
                         ),
                         primaryDotColor: Colors.transparent,
-                        selectedTextStyle: TextStyle(color: Colors.white , ),
+                        selectedTextStyle: TextStyle(
+                          color: Colors.white,
+                        ),
                         selectedDotColor: Colors.deepOrange,
-
                       ),
                     ),
                   )
@@ -178,19 +215,19 @@ class _HomeState extends State<Home> {
     );
   }
 
-  int _hintGen() {
-    print('_hintGen');
-    final withVal = currGame.boxes
-        .where(
-          (element) => element.value != null,
-        )
-        .toList();
-    final va = Random().nextInt((withVal.length - 1));
-
-    int position = withVal[va].position;
-    if (currGame.boxes[position].filled == true) {
-      position = _hintGen();
-    }
-    return position;
-  }
+// int _hintGen() {
+//   print('_hintGen');
+//   final withVal = currGame.boxes
+//       .where(
+//         (element) => element.value != null,
+//       )
+//       .toList();
+//   final va = Random().nextInt((withVal.length - 1));
+//
+//   int position = withVal[va].position;
+//   if (currGame.boxes[position].filled == true) {
+//     position = _hintGen();
+//   }
+//   return position;
+// }
 }

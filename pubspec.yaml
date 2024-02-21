@@ -38,6 +38,7 @@ dependencies:
   flutter_svg: ^2.0.9
   get: ^4.6.6
   circular_pattern: ^0.0.3
+  awesome_dialog: ^3.2.0
 
 
 dev_dependencies:
